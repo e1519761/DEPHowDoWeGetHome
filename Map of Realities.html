@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Map of Realities — How Do We Get Home?</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* =========================================
+   GLOBAL
+========================================= */
+
+:root {
+    --ink:#2B2B2B;
+    --font:'Inter Tight','Helvetica Neue',Arial,sans-serif;
+    --paper:#f8f8f8;
+    --line:rgba(43,43,43,.28);
+    --soft-line:rgba(43,43,43,.12);
+    --see:#83c2bd;
+    --hear:#efd15b;
+    --smell:#dc9ac1;
+    --touch:#ef995f;
+    --feel:#94c781;
+}
+
+* {
+    box-sizing:border-box;
+}
+
+html {
+    scroll-behavior:smooth;
+}
+
+body {
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font);
+    font-weight:300;
+    -webkit-font-smoothing:antialiased;
+}
+
+button,input,select {
+    font:inherit;
+    color:inherit;
+}
+
+button {
+    cursor:pointer;
+}
+
+a {
+    color:inherit;
+}
+
+[hidden] {
+    display:none!important;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline:1px solid var(--ink);
+    outline-offset:4px;
+}
+
+/* =========================================
+   FIXED HEADER
+========================================= */
+
+#header {
+    position:fixed;
+    top:12px;
+    left:16px;
+    z-index:100;
+    max-width:55vw;
+    pointer-events:none;
+}
+
+#header h1 {
+    margin:0;
+    font-size:clamp(20px,4vw,44px);
+    font-weight:200;
+    line-height:.95;
+    letter-spacing:-.035em;
+    text-transform:uppercase;
+}
+
+#header h6 {
+    margin:0;
+    font-size:16px;
+    font-weight:500;
+    line-height:1.2;
+}
+
+/* =========================================
+   TOP NAVIGATION
+========================================= */
+
+#quickLinks {
+    position:fixed;
+    top:20px;
+    right:20px;
+    z-index:110;
+    display:flex;
+    align-items:center;
+    gap:clamp(14px,2vw,28px);
+}
+
+#quickLinks a,
+#quickLinks button {
+    font-family:var(--font);
+    font-size:13px;
+    font-weight:300;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    line-height:1;
+    text-decoration:none;
+    background:none;
+    border:0;
+    padding:0;
+    white-space:nowrap;
+}
+
+#quickLinks a:hover,
+#quickLinks button:hover {
+    opacity:.55;
+}
+
+#menuButton svg {
+    display:block;
+    width:24px;
+    height:24px;
+    fill:none;
+    stroke:var(--ink);
+    stroke-width:1;
+    stroke-linecap:round;
+}
+
+/* =========================================
+   MENU OVERLAY
+========================================= */
+
+#menu {
+    position:fixed;
+    inset:0;
+    z-index:90;
+
+    display:grid;
+    grid-template-columns:25vw minmax(0,75vw);
+
+    padding:150px 0 48px;
+
+    background:rgba(250,250,250,.78);
+    backdrop-filter:blur(22px);
+    -webkit-backdrop-filter:blur(22px);
+
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+
+    transition:
+        opacity .5s cubic-bezier(.22,1,.36,1),
+        visibility .5s;
+}
+
+#menu.open {
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+}
+
+#menuNav {
+    justify-self:end;
+    align-self:start;
+
+    list-style:none;
+    margin:0 3vw 0 0;
+    padding:0 24px 0 0;
+
+    border-right:1px solid var(--line);
+    text-align:right;
+}
+
+#menuNav li {
+    padding:9px 0;
+    font-size:15px;
+    font-weight:300;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    white-space:nowrap;
+    cursor:pointer;
+    transition:opacity .3s ease;
+}
+
+#menuNav li.active {
+    font-weight:500;
+    text-decoration:underline;
+    text-underline-offset:4px;
+}
+
+#menuNav li:hover {
+    opacity:.5;
+}
+
+#menuPage {
+    min-width:0;
+    min-height:0;
+    overflow-y:auto;
+    overflow-x:hidden;
+    padding:0 6vw 40px 0;
+    scrollbar-width:thin;
+}
+
+#menuPage.content-enter {
+    animation:menuContentIn .5s cubic-bezier(.22,1,.36,1);
+}
+
+@keyframes menuContentIn {
+    from {
+        opacity:0;
+        transform:translateY(12px);
+    }
+    to {
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* =========================================
+   MENU TYPOGRAPHY
+========================================= */
+
+#menuPage h3 {
+    margin:50px 0 16px;
+    font-size:clamp(23px,2.2vw,32px);
+    font-weight:400;
+    letter-spacing:-.025em;
+    line-height:1.15;
+}
+
+#menuPage h3:first-child {
+    margin-top:0;
+}
+
+#menuPage h4 {
+    margin:28px 0 10px;
+    font-size:17px;
+    font-weight:500;
+}
+
+#menuPage p,
+#menuPage li {
+    font-size:14px;
+    font-weight:300;
+    line-height:1.6;
+}
+
+#menuPage p {
+    margin:0 0 15px;
+}
+
+#menuPage a {
+    text-decoration-color:var(--line);
+    text-underline-offset:3px;
+}
+
+/* =========================================
+   MENU TABLES
+========================================= */
+
+#menuPage .research-section {
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    width:100%;
+    min-width:0;
+    padding:0 0 70px;
+    margin:0;
+}
+
+#menuPage .research-heading {
+    width:100%;
+    margin-bottom:25px;
+}
+
+#menuPage .research-heading span {
+    display:block;
+    font-size:12px;
+    margin-bottom:5px;
+}
+
+#menuPage .research-heading h3 {
+    margin:0;
+}
+
+#menuPage .research-content {
+    width:100%;
+    min-width:0;
+}
+
+#menuPage .research-table {
+    width:100%;
+    table-layout:fixed;
+    border-collapse:collapse;
+    border-spacing:0;
+    background:transparent;
+}
+
+#menuPage .research-table th {
+    text-align:left;
+    vertical-align:top;
+    border:0;
+    border-top:1px solid var(--ink);
+    background:transparent;
+    padding:13px 18px 20px 0;
+    font-size:12px;
+    font-weight:600;
+    text-transform:uppercase;
+}
+
+#menuPage .research-table td {
+    text-align:left;
+    vertical-align:top;
+    border:0;
+    background:transparent;
+    padding:8px 18px 8px 0;
+    font-size:12px;
+    font-weight:300;
+    line-height:1.5;
+    overflow-wrap:break-word;
+}
+
+#menuPage .research-table tr {
+    background:transparent;
+}
+
+#menuPage .research-table tbody tr:hover {
+    background:rgba(43,43,43,.025);
+}
+
+#menuPage .research-emphasis td:first-child,
+#menuPage .research-emphasis td:nth-child(3) {
+    font-weight:600;
+}
+
+#menuPage .research-note {
+    margin-top:20px;
+    font-size:12px;
+}
+
+/* =========================================
+   STANDARD TABLES
+========================================= */
+
+#menuPage table:not(.research-table) {
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+}
+
+#menuPage table:not(.research-table) th {
+    text-align:left;
+    font-size:12px;
+    font-weight:500;
+    border-top:1px solid var(--line);
+    padding:12px 14px 15px 0;
+}
+
+#menuPage table:not(.research-table) td {
+    text-align:left;
+    vertical-align:top;
+    font-size:12px;
+    font-weight:300;
+    line-height:1.5;
+    padding:9px 14px 9px 0;
+    overflow-wrap:break-word;
+}
+
+/* =========================================
+   PILOT PROJECTS
+========================================= */
+
+#menuPage .pilot-list {
+    display:flex;
+    flex-direction:column;
+    width:100%;
+}
+
+#menuPage .pilot-row {
+    display:grid;
+    grid-template-columns:75px minmax(0,1fr) 125px 20px;
+    gap:14px;
+    align-items:start;
+    width:100%;
+    padding:14px 0;
+    border-top:1px solid var(--line);
+    font-size:13px;
+    line-height:1.45;
+    text-decoration:none;
+    transition:
+        opacity .3s ease,
+        padding-left .4s cubic-bezier(.22,1,.36,1);
+}
+
+#menuPage .pilot-row:last-child {
+    border-bottom:1px solid var(--line);
+}
+
+#menuPage .pilot-row:hover {
+    opacity:.65;
+    padding-left:6px;
+}
+
+#menuPage .pilot-year {
+    font-size:12px;
+}
+
+#menuPage .pilot-name {
+    font-size:13px;
+    font-weight:400;
+}
+
+#menuPage .pilot-place {
+    font-size:11px;
+    text-transform:uppercase;
+}
+
+#menuPage .pilot-arrow {
+    text-align:right;
+    font-size:17px;
+}
+
+/* =========================================
+   FIVE-COLUMN RESEARCH
+========================================= */
+
+#menuPage .walk-methods,
+#menuPage .walk-gallery {
+    display:grid;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:22px;
+    width:100%;
+}
+
+#menuPage .walk-method {
+    min-width:0;
+    border-top:1px solid var(--line);
+    padding-top:14px;
+}
+
+#menuPage .method-title {
+    font-size:12px;
+    font-weight:500;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    margin-bottom:9px;
+}
+
+#menuPage .walk-method p {
+    margin:0;
+    font-size:14px;
+    line-height:1.6;
+}
+
+#menuPage .walk-gallery {
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    margin-top:90px;
+    padding-bottom:30px;
+}
+
+#menuPage .walk-caption {
+    min-height:85px;
+    padding-bottom:12px;
+}
+
+#menuPage .walk-title {
+    font-size:13px;
+    font-weight:500;
+}
+
+#menuPage .walk-caption p {
+    font-size:12px;
+    margin:0;
+}
+
+#menuPage .walk-image {
+    width:100%;
+    aspect-ratio:4/5;
+    overflow:hidden;
+}
+
+#menuPage .walk-image img {
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+/* =========================================
+   DATA MANAGEMENT
+========================================= */
+
+#menuPage {
+    --management-gap:22px;
+    --management-columns:repeat(5,minmax(0,1fr));
+}
+
+#menuPage .management-workflow {
+    display:grid;
+    grid-template-columns:var(--management-columns);
+    gap:var(--management-gap);
+}
+
+#menuPage .management-roles {
+    width:100%;
+    table-layout:fixed;
+    border-collapse:collapse;
+}
+
+#menuPage .management-principle-row {
+    display:grid;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:22px;
+    align-items:start;
+}
+
+/* =========================================
+   FIXED TITLE BACKGROUND
+========================================= */
+
+body::before {
+    content:"";
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    height:125px;
+    z-index:95;
+    pointer-events:none;
+    background:linear-gradient(
+        to bottom,
+        var(--paper) 0%,
+        var(--paper) 78%,
+        rgba(248,248,248,0) 100%
+    );
+    transition:opacity .4s ease;
+}
+
+body:has(#menu.open)::before {
+    opacity:0;
+}
+
+/* =========================================
+   CHAPTER NAVIGATION
+========================================= */
+
+#chapterNav {
+    position:fixed;
+    top:125px;
+    right:20px;
+    z-index:96;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:12px;
+}
+
+#chapterNav button {
+    border:0;
+    background:none;
+    padding:0;
+    font-size:12px;
+    font-weight:300;
+    text-align:right;
+    opacity:.35;
+    transition:
+        opacity .35s ease,
+        transform .35s cubic-bezier(.22,1,.36,1);
+}
+
+#chapterNav button.active {
+    font-weight:600;
+    opacity:1;
+}
+
+#chapterNav button:hover {
+    opacity:1;
+    transform:translateX(-4px);
+}
+
+body:has(#menu.open) #chapterNav {
+    opacity:0;
+    pointer-events:none;
+}
+
+/* =========================================
+   CHAPTERS
+========================================= */
+
+.chapter {
+    padding:180px 3vw 110px;
+}
+
+.chapter + .chapter {
+    border-top:1px solid var(--soft-line);
+}
+
+.chapter-heading {
+    display:grid;
+    grid-template-columns:25% minmax(0,1fr);
+    margin-bottom:55px;
+}
+
+.chapter-label {
+    font-size:12px;
+    font-weight:400;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+}
+
+.chapter-title {
+    margin:0 0 22px;
+    font-size:clamp(40px,5vw,82px);
+    font-weight:300;
+    letter-spacing:-.055em;
+    line-height:1.02;
+}
+
+.chapter-description {
+    max-width:720px;
+    margin:0;
+    font-size:15px;
+    line-height:1.7;
+}
+
+.small-note {
+    font-size:11px;
+    line-height:1.65;
+    color:#777;
+}
+
+.reveal {
+    opacity:0;
+    transform:translateY(22px);
+    transition:
+        opacity .9s cubic-bezier(.22,1,.36,1),
+        transform .9s cubic-bezier(.22,1,.36,1);
+}
+
+.reveal.visible {
+    opacity:1;
+    transform:none;
+}
+
+/* =========================================
+   01 MAP — TWO-COLUMN LAYOUT
+========================================= */
+
+.map-layout {
+    display:grid;
+    grid-template-columns:25% minmax(0,1fr);
+    gap:0;
+    width:100%;
+    align-items:start;
+}
+
+.map-intro {
+    padding:0 42px 0 0;
+}
+
+.map-intro .chapter-label {
+    margin-bottom:16px;
+}
+
+.map-intro .chapter-title {
+    font-size:clamp(35px,3.4vw,58px);
+}
+
+.map-intro .chapter-description {
+    max-width:370px;
+    font-size:14px;
+    line-height:1.7;
+}
+
+/* =========================================
+   MAP FRAME — SHIFTED LEFT
+========================================= */
+
+#chapter1 {
+    padding-top:220px;
+}
+
+/*
+   Shift the entire map 70px left.
+   Reduce its width slightly so the right edge
+   no longer extends underneath the chapter nav.
+*/
+
+#chapter1 .map-frame {
+    position:relative;
+    left:-70px;
+    width:calc(100% - 30px);
+    aspect-ratio:1.75 / 1;
+    height:auto;
+    min-height:0;
+    overflow:hidden;
+    border-top:1px solid var(--line);
+    background:rgba(255,255,255,.55);
+}
+
+#chapter1 .map-frame iframe {
+    position:absolute;
+    top:-70px;
+    left:-260px;
+    width:calc(100% + 260px);
+    height:calc(100% + 70px);
+    border:0;
+    display:block;
+}
+
+.map-footer {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:25px;
+    margin-top:18px;
+}
+
+.text-link {
+    font-size:12px;
+    font-weight:500;
+    text-decoration:none;
+    border-bottom:1px solid var(--ink);
+    padding-bottom:4px;
+    white-space:nowrap;
+    transition:opacity .3s ease;
+}
+
+.text-link:hover {
+    opacity:.5;
+}
+
+/* =========================================
+   02 WHAT WE FOUND — DIAGRAM LAYOUT
+========================================= */
+
+#chapter2 {
+    padding-top:220px;
+}
+
+.findings-layout {
+    display:grid;
+    grid-template-columns:25% minmax(0,1fr);
+    align-items:start;
+    width:100%;
+}
+
+.findings-intro {
+    min-width:0;
+    padding:0 42px 0 0;
+}
+
+.findings-intro .chapter-label {
+    margin-bottom:16px;
+}
+
+.findings-intro .chapter-title {
+    font-size:clamp(35px,3.4vw,58px);
+    line-height:1.02;
+    margin-bottom:25px;
+}
+
+.findings-text {
+    max-width:370px;
+    margin-top:28px;
+}
+
+.findings-text p {
+    margin:0 0 24px;
+    font-size:14px;
+    font-weight:300;
+    line-height:1.75;
+    letter-spacing:0;
+}
+
+/* =========================================
+   CHAPTER 02 — RESIZED DIAGRAM
+========================================= */
+
+.diagram-column {
+    min-width:0;
+    width:100%;
+}
+
+.diagram-frame {
+    width:100%;
+    height:calc(100vh - 285px);
+    min-height:450px;
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border-top:1px solid var(--line);
+    background:transparent;
+    padding:18px 45px 10px;
+}
+
+.diagram-frame img {
+    display:block;
+    width:auto;
+    height:auto;
+    max-width:100%;
+    max-height:100%;
+    object-fit:contain;
+    object-position:center;
+    margin:0 auto;
+}
+
+.diagram-caption {
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:20px;
+    padding:18px 0 0;
+    border-top:1px solid var(--soft-line);
+    margin-top:18px;
+}
+
+.diagram-caption span {
+    font-size:11px;
+    font-weight:300;
+    line-height:1.5;
+    color:#777;
+}
+
+/* =========================================
+   03 WHO WALKS DIFFERENTLY
+========================================= */
+
+.groups {
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:22px;
+}
+
+.group {
+    border-top:1px solid var(--line);
+    padding-top:15px;
+}
+
+.group small {
+    font-size:11px;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+}
+
+.group h4 {
+    margin:10px 0 10px;
+    font-size:21px;
+    font-weight:400;
+    letter-spacing:-.02em;
+}
+
+.group p {
+    margin:0;
+    font-size:14px;
+    line-height:1.65;
+}
+
+.end-panel {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:30px;
+    margin-top:90px;
+    padding:30px 0;
+    border-top:1px solid var(--line);
+}
+
+.end-panel p {
+    max-width:700px;
+    margin:0;
+    font-size:clamp(20px,2vw,30px);
+    font-weight:300;
+    line-height:1.35;
+}
+
+footer {
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    padding:35px 3vw;
+    border-top:1px solid var(--soft-line);
+    font-size:11px;
+}
+
+footer a {
+    text-decoration:none;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media(max-width:1100px) {
+    #quickLinks {
+        top:16px;
+        left:16px;
+        right:16px;
+        flex-wrap:wrap;
+        gap:10px 18px;
+    }
+
+    #header {
+        top:44px;
+        max-width:calc(100vw - 32px);
+    }
+
+    #chapterNav {
+        top:145px;
+    }
+
+    body::before {
+        height:150px;
+    }
+
+    .groups {
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .map-layout,
+    .findings-layout {
+        grid-template-columns:30% minmax(0,1fr);
+    }
+
+    .map-intro,
+    .findings-intro {
+        padding-right:24px;
+    }
+}
+
+@media(max-width:750px) {
+    #header {
+        top:70px;
+    }
+
+    #header h1 {
+        font-size:28px;
+    }
+
+    #header h6 {
+        font-size:12px;
+    }
+
+    body::before {
+        height:175px;
+    }
+
+    #chapterNav {
+        display:none;
+    }
+
+    .chapter {
+        padding:185px 20px 85px;
+    }
+
+    #chapter1,
+    #chapter2 {
+        padding-top:185px;
+    }
+
+    .chapter-heading {
+        grid-template-columns:1fr;
+        gap:16px;
+    }
+
+    .chapter-title {
+        font-size:clamp(35px,8vw,55px);
+    }
+
+    .map-layout,
+    .findings-layout {
+        grid-template-columns:1fr;
+        gap:35px;
+    }
+
+    .map-intro,
+    .findings-intro {
+        padding-right:0;
+    }
+
+    /* Reset the desktop map shift on mobile */
+
+    #chapter1 .map-frame {
+        left:0;
+        width:100%;
+        aspect-ratio:4 / 5;
+    }
+
+    #chapter1 .map-frame iframe {
+        top:-70px;
+        left:-180px;
+        width:calc(100% + 180px);
+        height:calc(100% + 70px);
+    }
+
+    .findings-text {
+        max-width:100%;
+    }
+
+    .diagram-frame {
+        height:auto;
+        min-height:0;
+        padding:15px 0;
+    }
+
+    .diagram-frame img {
+        width:100%;
+        height:auto;
+        max-height:none;
+    }
+
+    .diagram-caption {
+        flex-direction:column;
+        gap:6px;
+    }
+
+    .groups {
+        grid-template-columns:1fr;
+    }
+
+    .end-panel {
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    #menu {
+        grid-template-columns:1fr;
+        padding:165px 20px 30px;
+    }
+
+    #menuNav {
+        justify-self:start;
+        text-align:left;
+        border-right:0;
+        border-bottom:1px solid var(--line);
+        margin:0 0 20px;
+        padding:0 0 15px;
+    }
+
+    #menuPage {
+        padding-right:0;
+    }
+
+    #menuPage .research-content {
+        overflow-x:auto;
+    }
+
+    #menuPage .research-table {
+        min-width:600px;
+    }
+
+    #menuPage .pilot-row {
+        grid-template-columns:50px minmax(0,1fr) 18px;
+    }
+
+    #menuPage .pilot-place {
+        display:none;
+    }
+
+    #menuPage .walk-methods {
+        grid-template-columns:repeat(5,minmax(150px,1fr));
+        min-width:820px;
+    }
+
+    #menuPage .walk-gallery {
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    #menuPage .management-workflow {
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+}
+
+@media(prefers-reduced-motion:reduce) {
+    html {
+        scroll-behavior:auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        transition:none!important;
+        animation:none!important;
+    }
+
+    .reveal {
+        opacity:1;
+        transform:none;
+    }
+}
+
+/* title is a link back to the video start page */
+#homeLink {
+    display:inline-block;
+    pointer-events:auto;
+    color:var(--ink);
+    text-decoration:none;
+    transition:opacity .25s ease;
+}
+
+#homeLink:hover {
+    opacity:.55;
+}
+</style>
+<style>
+/* =========================================
+   SITE FOOTER — same on every page (not the video page)
+   link row + address block
+========================================= */
+footer.site-footer {
+    position:relative;
+    z-index:8;
+    display:block;
+    margin:0;
+    padding:0;
+    border:0;
+    background:#f8f8f8;
+    color:#2B2B2B;
+    font-family:'Inter Tight','Helvetica Neue',Arial,sans-serif;
+    font-weight:300;
+    -webkit-font-smoothing:antialiased;
+}
+footer.site-footer a,
+footer.site-footer a:visited,
+footer.site-footer a:hover {color:inherit}
+
+/* row 1: previous page · project · next page */
+footer.site-footer .site-footer-nav {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    padding:35px 3vw;
+    border-top:1px solid rgba(43,43,43,.12);
+    font-size:11px;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    text-align:left;
+}
+footer.site-footer .site-footer-nav a {text-decoration:none;transition:opacity .25s ease}
+footer.site-footer .site-footer-nav a:hover {opacity:.55}
+
+/* row 2: title · studio address · course */
+footer.site-footer .site-footer-info {
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:30px;
+    padding:35px 3vw 45px;
+    border-top:1px solid rgba(43,43,43,.12);
+    font-size:11px;
+    line-height:1.65;
+    text-align:left;
+}
+footer.site-footer .site-footer-info h2 {
+    margin:0;
+    font-size:clamp(28px,3vw,50px);
+    font-weight:300;
+    line-height:1.15;
+    letter-spacing:-.04em;
+    text-transform:none;
+}
+footer.site-footer .site-footer-info > div:last-child {text-align:right}
+footer.site-footer .site-footer-info p {margin:11px 0 0;font-size:11px;line-height:1.65}
+footer.site-footer .site-footer-info a {text-decoration:underline;text-underline-offset:2px}
+
+@media(max-width:900px) {
+    footer.site-footer .site-footer-info {grid-template-columns:1fr 1fr}
+    footer.site-footer .site-footer-info > div:last-child {text-align:left}
+}
+@media(max-width:600px) {
+    footer.site-footer .site-footer-nav {flex-direction:column;align-items:flex-start;gap:10px}
+    footer.site-footer .site-footer-info {grid-template-columns:1fr}
+}
+
+/* =========================================
+   MAP KEY — under the text, left column
+========================================= */
+:root {
+    --key-entry: #2B2B2B;   /* ← match the colour of your survey in Ushahidi */
+}
+.map-key {
+    margin-top:36px;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+    max-width:370px;
+}
+.map-key-label {
+    margin:0 0 12px;
+    font-size:11px;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+}
+.map-key-list {list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.map-key-item {display:flex;align-items:center;gap:9px;margin:0;font-size:12px;font-weight:300;line-height:1.3}
+.map-key-sym {flex:0 0 16px}
+</style>
+</head>
+
+<body>
+
+<!-- =========================================
+     FIXED HEADER
+========================================= -->
+
+<div id="header">
+    <a id="homeLink" href="video.html" aria-label="Back to the start page">
+        <h1>HOW DO WE GET HOME?</h1>
+        <h6>Wayfinding from transit to front door in Singapore's HDB estates</h6>
+    </a>
+</div>
+
+<!-- TOP NAVIGATION -->
+<nav id="quickLinks" aria-label="Main navigation"></nav>
+
+<!-- MENU -->
+<div id="menu">
+    <ul id="menuNav"></ul>
+    <div id="menuPage"></div>
+</div>
+
+<!-- CHAPTER NAVIGATION -->
+<nav id="chapterNav" aria-label="Map of Realities chapters">
+    <button class="active" data-target="chapter1">The Map</button>
+    <button data-target="chapter2">What We Found</button>
+    <button data-target="chapter3">Who Walks Differently</button>
+</nav>
+
+<main>
+
+<!-- =========================================
+     01 THE MAP
+========================================= -->
+
+<section class="chapter" id="chapter1">
+
+    <div class="map-layout">
+
+        <div class="map-intro reveal">
+
+            <div class="chapter-label">
+                01 / Map of Realities
+            </div>
+
+            <h2 class="chapter-title">
+                Every journey<br>leaves a trace.
+            </h2>
+
+            <p class="chapter-description">
+                Reviewed entries from residents, plotted where they happen:
+                the cues that help people find their way home, and the places
+                where they get confused.
+            </p>
+
+            <div style="margin-top:32px;">
+                <a
+                    href="https://wayfindingsingapore.ushahidi.io/map"
+                    class="text-link"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    OPEN MAP IN A NEW TAB ↗
+                </a>
+            </div>
+
+            <!-- MAP KEY: edit the labels here; the dot colour is --key-entry in the CSS -->
+            <div class="map-key">
+                <div class="map-key-label">Map key</div>
+                <ul class="map-key-list">
+                    <li class="map-key-item"><svg class="map-key-sym" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><circle cx="8" cy="8" r="4.5" fill="var(--key-entry)" stroke="#fff" stroke-width="1.5"/></svg><span>Resident entry (click for the story)</span></li>
+                    <li class="map-key-item"><svg class="map-key-sym" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--key-entry)" fill-opacity=".18" stroke="var(--key-entry)"/><text x="8" y="10.8" text-anchor="middle" font-size="7.5" font-weight="600" fill="var(--key-entry)" font-family="Inter Tight, Arial, sans-serif">3</text></svg><span>Group of entries (number = how many)</span></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="map-frame reveal">
+            <iframe
+                id="realityMap"
+                src="https://wayfindingsingapore.ushahidi.io/map"
+                title="Map of Realities: Wayfinding in Singapore"
+                allowfullscreen
+                loading="lazy">
+            </iframe>
+        </div>
+
+    </div>
+
+    <div class="map-footer">
+
+        <span class="small-note">
+            RESIDENT JOURNEYS / WAYFINDING SINGAPORE
+        </span>
+
+        <a href="survey.html" class="text-link">
+            ADD YOUR WALK ↗
+        </a>
+
+    </div>
+
+</section>
+
+<!-- =========================================
+     02 WHAT WE FOUND
+========================================= -->
+
+<section class="chapter" id="chapter2">
+
+    <div class="findings-layout">
+
+        <!-- LEFT TEXT COLUMN -->
+
+        <div class="findings-intro reveal">
+
+            <div class="chapter-label">
+                02 / WHAT WE FOUND
+            </div>
+
+            <h2 class="chapter-title">
+                The patterns behind<br>the walk.
+            </h2>
+
+            <div class="findings-text">
+
+                <p>
+                    Each corner of the pentagon represents a sense
+                    (see, smell, feel, touch and hear), and the words
+                    clustered around it are the cues residents named
+                    when describing how they know they are nearly home.
+                    Together they show that wayfinding goes well beyond
+                    signs and arrows: people build rich mental maps from
+                    cooking smells, playground colours, the echo of a
+                    lift lobby or the change of ground underfoot.
+                </p>
+
+                <p>
+                    Word size reflects how many responses mentioned it,
+                    so the words that stand out point to shared experiences:
+                    cues that many different people independently rely on
+                    to orient themselves. As the study moves beyond this
+                    pilot to more locations, the same diagram can be
+                    recreated for each one, allowing comparisons between
+                    areas. Some places may trigger certain senses more
+                    strongly than others, and where a sense is barely used
+                    at all, there is an opportunity gap. Those gaps can
+                    inform design decisions that make a space richer in
+                    experience as well as more accessible.
+                </p>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT DIAGRAM COLUMN -->
+
+        <div class="diagram-column reveal">
+
+            <div class="diagram-frame">
+
+                <img
+                    src="assets/wayfinding_senses.png"
+                    alt="Five-senses pentagon word cloud showing residents' wayfinding cues across see, smell, feel, touch and hear"
+                    loading="lazy">
+
+            </div>
+
+            <div class="diagram-caption">
+
+                <span>
+                    WHAT TELLS US WE ARE NEARLY HOME?
+                </span>
+
+                <span>
+                    14 RESPONSES / WORD SIZE = NUMBER OF MENTIONS
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- =========================================
+     03 WHO WALKS DIFFERENTLY
+========================================= -->
+
+<section class="chapter" id="chapter3">
+
+    <div class="chapter-heading reveal">
+
+        <div class="chapter-label">
+            03 / WHO WALKS DIFFERENTLY
+        </div>
+
+        <div>
+
+            <h2 class="chapter-title">
+                Wayfinding varies<br>for everyone.
+            </h2>
+
+            <p class="chapter-description">
+                The same estate reads differently depending on who is walking it.
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="groups reveal">
+
+        <div class="group">
+            <small>01</small>
+            <h4>Families with children</h4>
+            <p>
+                The playground becomes an important signal of home,
+                while the sidewalk and main road form a strict
+                boundary that marks leaving it.
+            </p>
+        </div>
+
+        <div class="group">
+            <small>02</small>
+            <h4>Seniors</h4>
+            <p>
+                Elevated walkways, stairs and moving between several
+                levels are the hardest parts of the walk.
+            </p>
+        </div>
+
+        <div class="group">
+            <small>03</small>
+            <h4>At night</h4>
+            <p>
+                Compact void decks are confusing because few visual
+                elements stand out, and after dark the area becomes
+                quiet and dim.
+            </p>
+        </div>
+
+        <div class="group">
+            <small>04</small>
+            <h4>Children and cyclists</h4>
+            <p>
+                Their boundaries are wider. They find their way from
+                the bike lanes and from large cues, like HDB blocks
+                or condos, that tell them they are in the right neighbourhood.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="end-panel reveal">
+
+        <p>
+            Every shared journey helps us understand how neighbourhoods
+            could become easier to navigate.
+        </p>
+
+        <a href="survey.html" class="text-link">
+            ADD YOUR WALK ↗
+        </a>
+
+    </div>
+
+</section>
+
+</main>
+
+<!-- =========================================
+     SITE FOOTER (same on every page)
+========================================= -->
+<footer class="site-footer">
+
+    <div class="site-footer-nav">
+        <a href="survey.html">← Add Your Walk</a>
+        <span>DEP5118 / HOW DO WE GET HOME?</span>
+        <a href="index.html">Back to Story ↗</a>
+    </div>
+
+    <div class="site-footer-info">
+
+        <h2>
+            HOW DO WE<br>
+            GET HOME?
+        </h2>
+
+        <div>
+            Thesis Studio Space<br>
+            Level 3, SDE3<br>
+            National University of Singapore<br>
+            4 Architecture Drive<br>
+            Singapore 117566
+
+            <p>
+                Tel: +65 6516 6666<br>
+                <a href="mailto:howdowegethome@nus.edu.sg">
+                    howdowegethome@nus.edu.sg
+                </a>
+            </p>
+        </div>
+
+        <div>
+            DEP5118 Community Data Gathering and Visualisation
+
+            <p>
+                Department of Architecture<br>
+                College of Design and Engineering<br>
+                National University of Singapore
+            </p>
+        </div>
+
+    </div>
+
+</footer>
+
+<script src="./config.js"></script>
+
+<script>
+/* =========================================
+   CONFIG
+========================================= */
+
+const cfg = typeof config !== "undefined" ? config : {};
+
+/* =========================================
+   TOP NAVIGATION
+========================================= */
+
+const quickLinks = document.getElementById("quickLinks");
+
+const defaultLinks = [
+    {label:"Story",href:"index.html"},
+    {label:"Four Walks",href:"four data.html"},
+    {label:"Add Your Walk",href:"survey.html"},
+    {label:"Map of Realities",href:"Map of Realities.html"}
+];
+
+(cfg.quickLinks || defaultLinks).forEach(link => {
+
+    const a = document.createElement("a");
+
+    a.href = link.href;
+    a.textContent = link.label;
+
+    if(link.newTab) {
+        a.target = "_blank";
+        a.rel = "noopener";
+    }
+
+    quickLinks.append(a);
+
+});
+
+/* =========================================
+   MENU ICONS
+========================================= */
+
+const ICON_MENU =
+    '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+    '<path d="M3 7h18M3 12h18M18 17H3"/></svg>';
+
+const ICON_CLOSE =
+    '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+    '<path d="M6 6l12 12M18 6L6 18"/></svg>';
+
+const menuButton = document.createElement("button");
+
+menuButton.id = "menuButton";
+menuButton.type = "button";
+menuButton.setAttribute("aria-label","Menu");
+menuButton.setAttribute("aria-expanded","false");
+menuButton.innerHTML = ICON_MENU;
+
+quickLinks.append(menuButton);
+
+/* =========================================
+   CONFIG.JS MENU
+========================================= */
+
+const menu = document.getElementById("menu");
+const menuNav = document.getElementById("menuNav");
+const menuPage = document.getElementById("menuPage");
+const menuItems = cfg.menu || [];
+
+function showMenuPage(index) {
+
+    if(!menuItems[index]) return;
+
+    [...menuNav.children].forEach((li,i) => {
+        li.classList.toggle("active",i === index);
+    });
+
+    menuPage.classList.remove("content-enter");
+
+    void menuPage.offsetWidth;
+
+    menuPage.innerHTML = menuItems[index].content || "";
+
+    menuPage.scrollTop = 0;
+
+    menuPage.classList.add("content-enter");
+
+}
+
+menuItems.forEach((item,i) => {
+
+    const li = document.createElement("li");
+
+    li.textContent = item.label;
+    li.tabIndex = 0;
+    li.setAttribute("role","button");
+
+    function choose() {
+
+        if(item.link) {
+            window.location.href = item.link;
+        } else {
+            showMenuPage(i);
+        }
+
+    }
+
+    li.addEventListener("click",choose);
+
+    li.addEventListener("keydown",event => {
+
+        if(event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            choose();
+        }
+
+    });
+
+    menuNav.append(li);
+
+});
+
+function setMenu(open) {
+
+    menu.classList.toggle("open",open);
+
+    menuButton.innerHTML = open ? ICON_CLOSE : ICON_MENU;
+
+    menuButton.setAttribute(
+        "aria-expanded",
+        String(open)
+    );
+
+    document.body.style.overflow = open ? "hidden" : "";
+
+    if(open) {
+
+        const first = menuItems.findIndex(item => !item.link);
+
+        if(first >= 0) {
+            showMenuPage(first);
+        }
+
+    }
+
+}
+
+menuButton.addEventListener("click",event => {
+
+    event.stopPropagation();
+
+    setMenu(!menu.classList.contains("open"));
+
+});
+
+document.addEventListener("keydown",event => {
+
+    if(event.key === "Escape") {
+        setMenu(false);
+    }
+
+});
+
+document.addEventListener("click",event => {
+
+    if(
+        menu.classList.contains("open") &&
+        !menu.contains(event.target) &&
+        !menuButton.contains(event.target)
+    ) {
+        setMenu(false);
+    }
+
+});
+
+/* =========================================
+   CHAPTER NAVIGATION
+========================================= */
+
+const chapters = [
+    ...document.querySelectorAll(".chapter")
+];
+
+const chapterButtons = [
+    ...document.querySelectorAll("#chapterNav button")
+];
+
+chapterButtons.forEach(button => {
+
+    button.addEventListener("click",() => {
+
+        document
+            .getElementById(button.dataset.target)
+            .scrollIntoView({
+                behavior:"smooth"
+            });
+
+    });
+
+});
+
+function updateChapterNav() {
+
+    let active = 0;
+
+    chapters.forEach((chapter,i) => {
+
+        if(
+            chapter.getBoundingClientRect().top <=
+            innerHeight * .4
+        ) {
+            active = i;
+        }
+
+    });
+
+    chapterButtons.forEach((button,i) => {
+
+        button.classList.toggle(
+            "active",
+            i === active
+        );
+
+        if(i === active) {
+            button.setAttribute("aria-current","step");
+        } else {
+            button.removeAttribute("aria-current");
+        }
+
+    });
+
+}
+
+window.addEventListener(
+    "scroll",
+    updateChapterNav,
+    {passive:true}
+);
+
+updateChapterNav();
+
+/* =========================================
+   SCROLL REVEAL
+========================================= */
+
+const revealElements = document.querySelectorAll(".reveal");
+
+if("IntersectionObserver" in window) {
+
+    const revealObserver = new IntersectionObserver(items => {
+
+        items.forEach(item => {
+
+            if(item.isIntersecting) {
+
+                item.target.classList.add("visible");
+
+                revealObserver.unobserve(item.target);
+
+            }
+
+        });
+
+    },{
+        threshold:0.08,
+        rootMargin:"0px 0px 80px 0px"
+    });
+
+    revealElements.forEach(el => {
+        revealObserver.observe(el);
+    });
+
+} else {
+
+    revealElements.forEach(el => {
+        el.classList.add("visible");
+    });
+
+}
+
+/* =========================================
+   MAP LINK
+========================================= */
+
+if(cfg.realitiesMapUrl) {
+
+    document.getElementById("realityMap").src =
+        cfg.realitiesMapUrl;
+
+}
+
+</script>
+</body>
+</html>

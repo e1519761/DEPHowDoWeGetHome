@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Do We Get Home?</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,200;0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+
+    <!-- start loading the story page early so "Enter" feels instant -->
+    <link rel="prefetch" href="index.html">
+
+    <style>
+        /* =========================================
+           SETTINGS — change these first
+           ========================================= */
+        :root {
+            --ink: #ffffff;
+            --font: 'Inter Tight', 'Helvetica Neue', Arial, sans-serif;
+            --edge: 16px;                 /* ← left/right margin, same as the story page */
+            --enter-size: 116px;          /* ← size of the round Enter button */
+        }
+
+        * {box-sizing: border-box}
+
+        html, body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #111;
+            color: var(--ink);
+            font-family: var(--font);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        /* =========================================
+           VIDEO + SHADING
+           ========================================= */
+        .video {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .video video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            animation: videoIn 2.6s ease forwards;
+        }
+        @keyframes videoIn {
+            from {opacity: 0; transform: scale(1.05)}
+            to   {opacity: 1; transform: scale(1)}
+        }
+        /* soft dark at the top (title) and bottom (senses), clear in the middle */
+        .video::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(to bottom, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0) 26%),
+                linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.35) 32%, rgba(0,0,0,0) 58%),
+                radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,0.25) 100%);
+        }
+
+        /* =========================================
+           TITLE — same size and place as the story page,
+           so it doesn't jump when you enter
+           ========================================= */
+        #header {
+            position: absolute;
+            top: 12px;
+            left: var(--edge);
+            z-index: 20;
+            max-width: 60vw;
+            text-shadow: 0 1px 10px rgba(0,0,0,0.3);
+            opacity: 0;
+            animation: fadeIn 1.4s ease 0.3s forwards;
+        }
+        #header h1 {
+            margin: 0;
+            font-size: clamp(20px, 4vw, 44px);
+            font-weight: 200;
+            line-height: 0.95;
+            letter-spacing: -0.035em;
+            text-transform: uppercase;
+        }
+        #header h6 {
+            margin: 4px 0 0;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        /* =========================================
+           LINE ABOVE THE SENSES
+           ========================================= */
+        /* bottom block: the line + the senses row stacked together */
+        .bottom {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 5;
+        }
+        .lede {
+            margin: 0 var(--edge) 34px;        /* ← gap between the line and the senses */
+            max-width: 720px;
+            font-size: clamp(22px, 2.3vw, 38px);
+            font-weight: 300;
+            font-style: italic;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            text-shadow: 0 1px 12px rgba(0,0,0,0.35);
+            opacity: 0;
+            transform: translateY(14px);
+            animation: fadeUp 1.2s ease 0.4s forwards;
+        }
+
+        /* =========================================
+           FOUR SENSES ROW
+           ========================================= */
+        .senses {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 22px;
+            padding: 0 var(--edge) 26px;
+        }
+
+        .sense {
+            min-width: 0;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255,255,255,0.55);
+            opacity: 0;
+            transform: translateY(18px);
+            animation: fadeUp 1s ease forwards;
+            transition: border-color 0.4s ease;
+        }
+        .sense > * {transition: opacity 0.4s ease}
+        .sense:nth-child(1) {animation-delay: 0.7s}
+        .sense:nth-child(2) {animation-delay: 0.85s}
+        .sense:nth-child(3) {animation-delay: 1s}
+        .sense:nth-child(4) {animation-delay: 1.15s}
+
+        /* hovering one sense quietly dims the others */
+        .senses:hover .sense:not(:hover) > * {opacity: 0.45}
+        .senses:hover .sense:not(:hover) {border-color: rgba(255,255,255,0.3)}
+        .senses .sense:hover {border-color: #fff}
+
+        .sense-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: 400;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.75);
+        }
+
+        .sense-body {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .sense-word {
+            margin: 0;
+            font-size: clamp(42px, 5.6vw, 104px);
+            font-weight: 300;
+            line-height: 0.82;
+            letter-spacing: -0.06em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .sense-figure {
+            flex: 0 0 auto;
+            width: clamp(46px, 4.2vw, 78px);
+            height: clamp(74px, 6.8vw, 124px);
+        }
+        .sense-figure img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center bottom;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));
+            transform-origin: center bottom;
+            transition: transform 0.5s cubic-bezier(.22,1,.36,1);
+        }
+        .sense:hover .sense-figure img {transform: translateY(-4px) scale(1.06)}
+
+        /* =========================================
+           ENTER — round button, right middle
+           ========================================= */
+        .enter {
+            position: absolute;
+            top: 50%;
+            right: 3vw;
+            z-index: 30;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: #fff;
+            text-decoration: none;
+            opacity: 0;
+            animation: fadeIn 1.6s ease 2.4s forwards;
+        }
+        .enter-label {
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            text-shadow: 0 1px 8px rgba(0,0,0,0.45);
+        }
+        .enter-circle {
+            position: relative;
+            display: grid;
+            place-items: center;
+            width: var(--enter-size);
+            height: var(--enter-size);
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.75);
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            font-size: 28px;
+            font-weight: 200;
+            transition: background 0.45s ease, color 0.45s ease, transform 0.45s cubic-bezier(.22,1,.36,1);
+        }
+        /* slow breathing ring so the button is noticed */
+        .enter-circle::after {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.5);
+            animation: pulse 2.8s ease-out 4s infinite;
+        }
+        @keyframes pulse {
+            from {transform: scale(1); opacity: 0.8}
+            to   {transform: scale(1.35); opacity: 0}
+        }
+        .enter-arrow {transition: transform 0.45s cubic-bezier(.22,1,.36,1)}
+        .enter:hover .enter-circle {background: #fff; color: #111; transform: scale(1.05)}
+        .enter:hover .enter-arrow {transform: translate(3px, -3px)}
+        .enter:focus-visible {outline: none}
+        .enter:focus-visible .enter-circle {outline: 1px solid #fff; outline-offset: 6px}
+
+        /* =========================================
+           VIDEO PROGRESS — hairline along the bottom
+           ========================================= */
+        .progress {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            z-index: 6;
+            height: 2px;
+            width: 0;
+            background: rgba(255,255,255,0.7);
+        }
+
+        /* =========================================
+           EXIT — fades to white, matching the story page
+           ========================================= */
+        .wash {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: #fff;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.7s ease;
+        }
+        .leaving .wash {opacity: 1}
+
+        @keyframes fadeIn {to {opacity: 1}}
+        @keyframes fadeUp {to {opacity: 1; transform: translateY(0)}}
+
+        /* =========================================
+           TABLET / MOBILE
+           ========================================= */
+        @media (max-width: 1000px) {
+            .senses {grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 26px}
+            .enter {right: 20px}
+        }
+        @media (max-width: 600px) {
+            #header {max-width: calc(100vw - 32px)}
+            #header h6 {font-size: 12px}
+            :root {--enter-size: 84px}
+            .enter {top: 42%}
+            .enter-label {display: none}
+            .lede {font-size: 20px; margin-bottom: 22px}
+            .senses {gap: 14px; row-gap: 20px; padding-bottom: 18px}
+            .sense-word {font-size: clamp(30px, 9vw, 44px)}
+            .sense-meta span:last-child {display: none}
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {animation: none !important; transition: none !important}
+            .video video, #header, .lede, .sense, .enter {opacity: 1; transform: none}
+            .enter {transform: translateY(-50%)}
+        }
+    </style>
+</head>
+
+<body>
+<main class="page" id="page">
+
+    <section class="video">
+        <video id="pov" autoplay muted loop playsinline preload="auto">
+            <source src="assets/POV VIDEO.mp4" type="video/mp4">
+        </video>
+    </section>
+
+    <div id="header">
+        <h1>How do we get home?</h1>
+        <h6>Wayfinding from transit to front door in Singapore’s HDB estates</h6>
+    </div>
+
+    <div class="bottom">
+
+    <p class="lede">Four people. Many ways of finding home.</p>
+
+    <!-- ===== FOUR SENSES ===== -->
+    <section class="senses" aria-label="Four walks">
+
+        <div class="sense">
+            <div class="sense-meta"><span>01</span><span>Queenstown</span></div>
+            <div class="sense-body">
+                <h2 class="sense-word">See</h2>
+                <div class="sense-figure"><img src="assets/People/laura.png" alt=""></div>
+            </div>
+        </div>
+
+        <div class="sense">
+            <div class="sense-meta"><span>02</span><span>Holland Village</span></div>
+            <div class="sense-body">
+                <h2 class="sense-word">Hear</h2>
+                <div class="sense-figure"><img src="assets/People/david.png" alt=""></div>
+            </div>
+        </div>
+
+        <div class="sense">
+            <div class="sense-meta"><span>03</span><span>Jurong East</span></div>
+            <div class="sense-body">
+                <h2 class="sense-word">Touch</h2>
+                <div class="sense-figure"><img src="assets/People/jamie.png" alt=""></div>
+            </div>
+        </div>
+
+        <div class="sense">
+            <div class="sense-meta"><span>04</span><span>Bishan</span></div>
+            <div class="sense-body">
+                <h2 class="sense-word">Feel</h2>
+                <div class="sense-figure"><img src="assets/People/heymans.png" alt=""></div>
+            </div>
+        </div>
+
+    </section>
+
+    </div>
+
+    <!-- ===== ENTER ===== -->
+    <a href="index.html" class="enter" id="enter">
+        <span class="enter-label">Click to enter</span>
+        <span class="enter-circle"><span class="enter-arrow">↗</span></span>
+    </a>
+
+    <div class="progress" id="progress"></div>
+</main>
+
+<div class="wash"></div>
+
+<script>
+    var enter = document.getElementById('enter');
+    var video = document.getElementById('pov');
+    var bar = document.getElementById('progress');
+    var leaving = false;
+
+    function go() {
+        if (leaving) return;
+        leaving = true;
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduce) { window.location.href = 'index.html'; return; }
+        document.body.classList.add('leaving');          // fade to white
+        setTimeout(function () { window.location.href = 'index.html'; }, 700);
+    }
+
+    enter.addEventListener('click', function (e) { e.preventDefault(); go(); });
+
+    // hairline that tracks the video
+    video.addEventListener('timeupdate', function () {
+        if (video.duration) bar.style.width = (video.currentTime / video.duration * 100) + '%';
+    });
+
+    // coming back with the browser Back button: undo the white fade
+    window.addEventListener('pageshow', function () {
+        leaving = false;
+        document.body.classList.remove('leaving');
+    });
+</script>
+</body>
+</html>
